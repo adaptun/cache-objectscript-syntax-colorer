@@ -9,7 +9,7 @@
 <form method='post'>
 Type: <select name="type">
 <script language='Cache' runat='server'>
- s langs = $LB("CLS","COS","JS","HTML")
+ s langs = $LB("CLS","COS","SQL","JS","HTML")
  s type = $G(%request.Data("type",1),"COS")
  f i=1:1:$LL(langs) {
      s lang = $LI(langs,i)
