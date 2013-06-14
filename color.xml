@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2013.1 (Build 443U)" ts="2013-06-14 11:49:41">
+<CSP name="color.CSP" application="/csp/user/" default="1"><![CDATA[
+<html>
+<head>
+<title>Colorizer</title>
+</head>
+<body>
+<form method='post'>
+Type: <select name="type">
+<script language='Cache' runat='server'>
+ s langs = $LB("CLS","COS","JS","HTML")
+ s type = $G(%request.Data("type",1),"COS")
+ f i=1:1:$LL(langs) {
+     s lang = $LI(langs,i)
+     &html<<option value='#(lang)#' #($case(lang,type:"selected",:""))#>#(lang)#</option>>
+ }
+</script>
+</select>
+Source: <br/>
+<textarea name='code' style="width:95%" rows=20>#(..EscapeHTML($G(%request.Data("code",1))))#</textarea>
+<br/><input type='submit'/>
+</form>
+<csp:if condition='$D(%request.Data("code",1))'>
+<script language='Cache' runat='server'>
+    s code = %request.Data("code",1)
+    s type = $G(%request.Data("type",1),"COS")
+    Set instr=##class(%GlobalCharacterStream).%New()
+    Do instr.WriteLine(code)
+    Set outstr=##class(%GlobalCharacterStream).%New()
+    Set colorer=##class(%SyntaxColor).%New()
+    Set ret=colorer.Color(instr,outstr,type,"PF",,,.langs,.coloringerrors)
+    If 'ret {Write "Fatal error: ",colorer.DLLResultCode,! Quit}
+    If coloringerrors {
+      Write "Syntax error(s)",!
+    }
+    w "<fieldset>"
+    Do outstr.Rewind()
+    While 'outstr.AtEnd {
+      Write outstr.ReadLine(),!
+    }
+    w "</fieldset>"
+</script>
+<br/>Result:
+<br/><textarea style="width:95%" rows=20>
+<script language='Cache' runat='server'>
+    Do outstr.Rewind()
+    While 'outstr.AtEnd {
+      Write $zcvt(outstr.ReadLine(),"O","HTML"),!
+    }
+</script>
+</textarea>
+</csp:if>
+</body>
+</html>]]></CSP>
+</Export>
