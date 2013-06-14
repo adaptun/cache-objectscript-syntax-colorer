@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2013.1 (Build 443U)" ts="2013-06-14 11:49:41">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-32) 2012.2 (Build 612U)" ts="2013-06-14 22:56:35">
 <CSP name="color.CSP" application="/csp/user/" default="1"><![CDATA[
 <html>
 <head>
 <title>Colorizer</title>
 </head>
 <body>
+<script language = 'Cache' runat='server'>
+ s tabSize = $G(%request.Data("tabSize",1),4)
+ s type = $G(%request.Data("type",1),"COS")
+ s code = $G(%request.Data("code",1))
+</script>
 <form method='post'>
+Tab size: <input type='text' name='tabSize' size=4 value = #(..QuoteJS(tabSize))# />&nbsp;&nbsp;
 Type: <select name="type">
 <script language='Cache' runat='server'>
  s langs = $LB("CLS","COS","SQL","JS","HTML")
- s type = $G(%request.Data("type",1),"COS")
+ 
  f i=1:1:$LL(langs) {
      s lang = $LI(langs,i)
      &html<<option value='#(lang)#' #($case(lang,type:"selected",:""))#>#(lang)#</option>>
@@ -18,13 +24,14 @@ Type: <select name="type">
 </script>
 </select>
 Source: <br/>
-<textarea name='code' style="width:95%" rows=20>#(..EscapeHTML($G(%request.Data("code",1))))#</textarea>
+<textarea name='code' style="width:95%" rows=20>#(..EscapeHTML(code))#</textarea>
 <br/><input type='submit'/>
 </form>
 <csp:if condition='$D(%request.Data("code",1))'>
 <script language='Cache' runat='server'>
-    s code = %request.Data("code",1)
-    s type = $G(%request.Data("type",1),"COS")
+	s tabReplace = ""
+	s $P(tabReplace, " ",tabSize) = " "
+    s code = $REPLACE(code,$C(9),tabReplace)
     Set instr=##class(%GlobalCharacterStream).%New()
     Do instr.WriteLine(code)
     Set outstr=##class(%GlobalCharacterStream).%New()
